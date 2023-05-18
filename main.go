@@ -3,18 +3,19 @@ package main
 import (
 	//"fmt"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
 
-type Persona struct {
-	Id        int
-	Nombre    string
-	Direccion string
+type Frutas struct {
+	Id       int
+	Fruta    string
+	Cantidad int
 }
 
-var personas = []Persona{
-	{Id: 1, Nombre: "Gerardo", Direccion: "CDMX"},
+var frutas = []Frutas{
+	{Id: 1, Fruta: "Manzana", Cantidad: 7},
 }
 
 func main() {
@@ -36,11 +37,11 @@ func dataHan(w http.ResponseWriter, r *http.Request) {
 
 func getData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "appication/json")
-	json.NewEncoder(w).Encode(personas)
+	json.NewEncoder(w).Encode(frutas)
 }
 
 func postData(w http.ResponseWriter, r *http.Request) {
-	var data Persona
+	var data Frutas
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil {
@@ -48,7 +49,20 @@ func postData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personas = append(personas, data)
+	busqueda := 5
+	existe := existeEnArreglo(frutas, busqueda)
+	fmt.Println("Buscando %d en arreglo. ¿Existe? %t", busqueda, existe)
+
+	frutas = append(frutas, data)
 	w.Header().Set("Content-Type", "appication/json")
 	json.NewEncoder(w).Encode(data)
+}
+
+func existeEnArreglo(arreglo []int, busqueda int) bool {
+	for _, numero := range arreglo {
+		if numero == busqueda {
+			return true
+		}
+	}
+	return false
 }
